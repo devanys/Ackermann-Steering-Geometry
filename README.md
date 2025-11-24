@@ -11,6 +11,8 @@ Project simulates an **Ackermann Steering Geometry** using the PyBullet physics 
 
 ## ⭐ Features
 
+<img width="537" height="466" alt="Screenshot 2025-11-25 025701" src="https://github.com/user-attachments/assets/952672fa-a8fa-4262-9177-b9f81a874f6e" /> <img width="243" height="182" alt="image" src="https://github.com/user-attachments/assets/5e270b66-69ed-46a3-9fe8-563a030e83e6" />
+
 ### Ackermann Kinematics
 - **Forward Ackermann** – computes angular velocity from steering input  
 - **Inverse Ackermann** – computes left/right wheel steering angles  
