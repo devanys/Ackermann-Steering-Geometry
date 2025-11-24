@@ -17,10 +17,10 @@ Project simulates an **Ackermann Steering Geometry** using the PyBullet physics 
 - **ICC (Instantaneous Center of Curvature)** computation  
 
 ### Visual Rendering
-- Vehicle body rendered in **yellow**
-- Wheels rendered in **orange**
-- ICC line rendered in **green**
-- Turning radius circle rendered in **red**
+- Vehicle body rendered 
+- Wheels rendered 
+- ICC line rendered 
+- Turning radius circle rendered 
 
 ### Real-Time Interaction
 Adjust simulation parameters using PyBullet sliders:
