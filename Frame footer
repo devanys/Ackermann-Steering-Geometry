@@ -1,0 +1,2 @@
+p.stepSimulation()
+time.sleep(1/60)
