@@ -1,0 +1,4 @@
+camera_distance = 5
+camera_yaw = 45
+camera_pitch = -30
+camera_update_rate = 1
