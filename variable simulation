@@ -1,0 +1,17 @@
+x, y, yaw = 0.0, 0.0, 0.0
+steer = 0.0
+
+timestep = 1/60
+p.setTimeStep(timestep)
+p.setGravity(0, 0, -9.81)
+
+v_slider = p.addUserDebugParameter("v", -V_BASE, V_BASE, 0.5)
+steer_slider = p.addUserDebugParameter("steer (deg)", -30, 30, 0)
+
+icc_line_id = None
+
+circle_ids = []
+last_icc_key = None
+redraw_every_n_frames = 2
+frame_count = 0
+circle_segments = 18
