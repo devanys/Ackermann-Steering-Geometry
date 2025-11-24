@@ -1,0 +1,19 @@
+def forward_ackermann(v, delta, L):
+    omega = v * math.tan(delta) / L
+    return v, omega
+
+def inverse_ackermann(v, omega, L, D, eps=1e-6):
+    if abs(v) < eps or abs(omega) < eps:
+        return 0.0, 0.0
+    R = v / omega
+    delta_L = math.atan(L / (R - D / 2.0))
+    delta_R = math.atan(L / (R + D / 2.0))
+    return delta_L, delta_R
+
+def compute_icc(x, y, yaw, v, omega, eps=1e-6):
+    if abs(omega) < eps:
+        return None
+    R = v / omega
+    icc_x = x - R * math.sin(yaw)
+    icc_y = y + R * math.cos(yaw)
+    return icc_x, icc_y, R
