@@ -1,0 +1,82 @@
+while True:
+    frame_count += 1
+
+    v_in = p.readUserDebugParameter(v_slider)
+    steer_deg = p.readUserDebugParameter(steer_slider)
+    steer = math.radians(steer_deg)
+
+    v, omega = forward_ackermann(v_in, steer, WHEELBASE)
+    delta_L, delta_R = inverse_ackermann(v, omega, WHEELBASE, BODY_WID)
+
+    x += v * math.cos(yaw) * timestep
+    y += v * math.sin(yaw) * timestep
+    yaw += omega * timestep
+
+    quat = p.getQuaternionFromEuler([0, 0, yaw])
+    p.resetBasePositionAndOrientation(robot, [x, y, 0.05], quat)
+
+    for i, wid in enumerate(wheels):
+        wx = x + wheel_positions[i][0] * math.cos(yaw) - wheel_positions[i][1] * math.sin(yaw)
+        wy = y + wheel_positions[i][0] * math.sin(yaw) + wheel_positions[i][1] * math.cos(yaw)
+
+        if i == 2:
+            rot = yaw + delta_L
+        elif i == 3:
+            rot = yaw + delta_R
+        else:
+            rot = yaw
+
+        quat_w = p.getQuaternionFromEuler([math.pi / 2, 0, rot])
+        p.resetBasePositionAndOrientation(wid, [wx, wy, wheel_radius], quat_w)
+
+    icc_data = compute_icc(x, y, yaw, v, omega)
+    if icc_data is not None:
+        icc_x, icc_y, R = icc_data
+
+        if icc_line_id is not None:
+            p.removeUserDebugItem(icc_line_id)
+        icc_line_id = p.addUserDebugLine(
+            [x - (WHEELBASE/2)*math.cos(yaw), y - (WHEELBASE/2)*math.sin(yaw), 0.05],
+            [icc_x, icc_y, 0.05],
+            [0, 1, 0],
+            2
+        )
+
+        icc_key = (round(icc_x, 3), round(icc_y, 3), round(R, 3))
+        need_redraw = (icc_key != last_icc_key) and (frame_count % redraw_every_n_frames == 0)
+
+        if need_redraw:
+            for cid in circle_ids:
+                p.removeUserDebugItem(cid)
+            circle_ids = []
+
+            circle_points = []
+            for a in range(0, 360, int(360 / circle_segments)):
+                ang = math.radians(a)
+                cx = icc_x + R * math.cos(ang)
+                cy = icc_y + R * math.sin(ang)
+                circle_points.append([cx, cy, 0.05])
+
+            n = len(circle_points)
+            for i in range(n):
+                cid = p.addUserDebugLine(circle_points[i], circle_points[(i+1) % n], [1, 0, 0], 1)
+                circle_ids.append(cid)
+
+            last_icc_key = icc_key
+
+    else:
+        if icc_line_id is not None:
+            p.removeUserDebugItem(icc_line_id)
+            icc_line_id = None
+        for cid in circle_ids:
+            p.removeUserDebugItem(cid)
+        circle_ids = []
+        last_icc_key = None
+
+    if frame_count % camera_update_rate == 0:
+        p.resetDebugVisualizerCamera(
+            cameraDistance=camera_distance,
+            cameraYaw=camera_yaw,
+            cameraPitch=camera_pitch,
+            cameraTargetPosition=[x, y, 0.05]
+        )
