@@ -1,0 +1,25 @@
+p.connect(p.GUI)
+p.setAdditionalSearchPath(pybullet_data.getDataPath())
+p.resetDebugVisualizerCamera(cameraDistance=2, cameraYaw=45, cameraPitch=-30, cameraTargetPosition=[0, 0, 0])
+p.loadURDF("plane.urdf")
+
+body_visual = p.createVisualShape(p.GEOM_BOX, halfExtents=[BODY_LEN / 2, BODY_WID / 2, 0.05], rgbaColor=[1, 1, 0, 1])
+body_col = p.createCollisionShape(p.GEOM_BOX, halfExtents=[BODY_LEN / 2, BODY_WID / 2, 0.05])
+robot = p.createMultiBody(baseMass=1, baseCollisionShapeIndex=body_col, baseVisualShapeIndex=body_visual, basePosition=[0, 0, 0.05])
+
+wheel_radius = WHEEL_RADIUS
+wheel_len = 0.02
+wheel_visual = p.createVisualShape(p.GEOM_CYLINDER, radius=wheel_radius, length=wheel_len, rgbaColor=[1, 0.5, 0, 1])
+wheel_col = p.createCollisionShape(p.GEOM_CYLINDER, radius=wheel_radius, height=wheel_len)
+
+wheel_positions = [
+    [-WHEELBASE/2, -BODY_WID/2, wheel_radius],
+    [-WHEELBASE/2,  BODY_WID/2, wheel_radius],
+    [ WHEELBASE/2, -BODY_WID/2, wheel_radius],
+    [ WHEELBASE/2,  BODY_WID/2, wheel_radius],
+]
+
+wheels = []
+for wp in wheel_positions:
+    wid = p.createMultiBody(baseMass=0.2, baseCollisionShapeIndex=wheel_col, baseVisualShapeIndex=wheel_visual, basePosition=wp)
+    wheels.append(wid)
